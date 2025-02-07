@@ -7,7 +7,7 @@ import {
   InputParametersState,
   useInputParametersState,
 } from "./provider/input-parameters-provider";
-import { FormComponent } from "./components/form-component";
+import { FormInputComponent } from "./components/form-input-component";
 
 function App() {
   const { inputParametersState, inputParametersDispatch } =
@@ -54,7 +54,7 @@ function App() {
         <Heading title={"Simulation Input Parameters"} />
         <form onSubmit={onFormSubmit}>
           {INPUT_PARAMETERS_FIELDS.map((inputParameters, index) => (
-            <FormComponent
+            <FormInputComponent
               key={index}
               title={inputParameters.title}
               parameterValue={
