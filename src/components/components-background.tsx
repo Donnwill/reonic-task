@@ -1,8 +1,8 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { cn } from "../lib/utils";
 
 export type ComponentsBackgroundProps = React.HTMLAttributes<HTMLDivElement> & {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export const ComponentsBackground: React.FC<ComponentsBackgroundProps> = ({

@@ -1,147 +1,71 @@
 import React, { useState } from "react";
 import { ComponentsBackground } from "./components/components-background";
 import { Heading } from "./components/heading";
-import { InputComponent } from "./components/input-component";
-import { SubHeading } from "./components/sub-heading";
 import { FormValidation } from "./functionality/form-validation";
-
-const INPUTSTYLE = `bg-trout rounded px-3 py-1 w-[50%] text-manatee shadow-sm items-center justify-center 
-font-IBM focus-visible:outline-none overflow-hidden h-7.5 [&::-webkit-inner-spin-button]:appearance-none`;
-
-export type InputParameters = {
-  totalChargingPoint: number;
-  totalNumberOfCars: number;
-  arrivalProbability: number;
-  powerConsumedByCars: number;
-  chargingPointPower: number;
-};
+import {
+  InputParametersName,
+  InputParametersState,
+  useInputParametersState,
+} from "./provider/input-parameters-provider";
+import { FormComponent } from "./components/form-component";
 
 function App() {
-  const [inputParameters, setInputParameters] = useState<InputParameters>({
-    totalChargingPoint: 1,
-    totalNumberOfCars: 1,
-    arrivalProbability: 100,
-    powerConsumedByCars: 18,
-    chargingPointPower: 11,
-  });
+  const { inputParametersState, inputParametersDispatch } =
+    useInputParametersState();
+
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const formValidation: FormValidation = new FormValidation(inputParameters);
+  const formValidation: FormValidation = new FormValidation(
+    inputParametersState
+  );
 
   function onHandleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
 
-    setInputParameters({
-      ...inputParameters,
-      [name]: value === "" ? "" : Number(value),
+    inputParametersDispatch({
+      type: "UPDATE_PARAMETERS",
+      payload: {
+        parameterName: name as keyof InputParametersState,
+        value: value === "" ? "" : Number(value),
+      },
     });
-    setErrors({ ...errors, [e.target.name]: "" });
+
+    setErrors((prevError) => ({ ...prevError, [e.target.name]: "" }));
   }
 
   function onFormSubmit(formData: React.FormEvent<HTMLFormElement>) {
     formData.preventDefault();
 
-    setErrors(formValidation.validateInputParameters());
+    const errors = formValidation.validateInputParameters();
+    setErrors(errors);
+
     if (formValidation.isInputParametersValid()) {
       console.log({ formData });
     }
   }
 
   function resetInputParameters() {
-    setInputParameters({
-      totalChargingPoint: 1,
-      totalNumberOfCars: 1,
-      arrivalProbability: 100,
-      powerConsumedByCars: 18,
-      chargingPointPower: 11,
-    });
+    inputParametersDispatch({ type: "RESET" });
   }
 
   return (
     <div className="flex flex-row">
-      <ComponentsBackground className={"ml-10 mt-10"}>
+      <ComponentsBackground className={"m-10"}>
         <Heading title={"Simulation Input Parameters"} />
         <form onSubmit={onFormSubmit}>
-          <SubHeading className="mt-6" title={"Total Charging Points"} />
-          <InputComponent className="mt-1" unit="Nos">
-            <input
-              className={INPUTSTYLE}
-              placeholder={"Total charging points"}
-              value={inputParameters.totalChargingPoint}
-              name="totalChargingPoint"
-              type="number"
-              onChange={onHandleChange}
+          {INPUT_PARAMETERS_FIELDS.map((inputParameters, index) => (
+            <FormComponent
+              key={index}
+              title={inputParameters.title}
+              parameterValue={
+                inputParametersState[inputParameters.parameterName]
+              }
+              unit={inputParameters.unit}
+              parameterName={inputParameters.parameterName}
+              error={errors[inputParameters.parameterName]}
+              onHandleChange={onHandleChange}
             />
-          </InputComponent>
-          {errors.totalChargingPoint && (
-            <p className="text-error font-IBM text-sm">
-              {errors.totalChargingPoint}
-            </p>
-          )}
-          <SubHeading className="mt-6" title={"Total Number Of Cars"} />
-          <InputComponent className="mt-1" unit="Nos">
-            <input
-              className={INPUTSTYLE}
-              placeholder={"Total number of cars"}
-              value={inputParameters.totalNumberOfCars}
-              name="totalNumberOfCars"
-              type="number"
-              onChange={onHandleChange}
-            />
-          </InputComponent>
-          {errors.totalNumberOfCars && (
-            <p className="text-error font-IBM text-sm">
-              {errors.totalNumberOfCars}
-            </p>
-          )}
-          <SubHeading className="mt-6" title={"Arrival Probability"} />
-          <InputComponent className="mt-1" unit="%">
-            <input
-              className={INPUTSTYLE}
-              placeholder={"Arrival probability"}
-              value={inputParameters.arrivalProbability}
-              name="arrivalProbability"
-              type="number"
-              onChange={onHandleChange}
-            />
-          </InputComponent>
-          {errors.arrivalProbability && (
-            <p className="text-error font-IBM text-sm">
-              {errors.arrivalProbability}
-            </p>
-          )}
-          <SubHeading className="mt-6" title={"Power Consumed By Cars"} />
-          <InputComponent className="mt-1" unit="kWh">
-            <input
-              className={INPUTSTYLE}
-              placeholder={"Power consumed by cars"}
-              value={inputParameters.powerConsumedByCars}
-              name="powerConsumedByCars"
-              type="number"
-              onChange={onHandleChange}
-            />
-          </InputComponent>
-          {errors.powerConsumedByCars && (
-            <p className="text-error font-IBM text-sm">
-              {errors.powerConsumedByCars}
-            </p>
-          )}
-          <SubHeading className="mt-6" title={"Charging Point Power"} />
-          <InputComponent className="mt-1" unit="kW">
-            <input
-              className={INPUTSTYLE}
-              placeholder={"Charging point power"}
-              value={inputParameters.chargingPointPower}
-              name="chargingPointPower"
-              type="number"
-              onChange={onHandleChange}
-            />
-          </InputComponent>
-          {errors.chargingPointPower && (
-            <p className="text-error font-IBM text-sm">
-              {errors.chargingPointPower}
-            </p>
-          )}
+          ))}
           <button
             className="text-manatee cursor-pointer mr-5 font-IBM underline"
             type="button"
@@ -150,8 +74,8 @@ function App() {
             Reset
           </button>
           <button
-            className={`mt-6 text-sm font-figtreeSemiBold uppercase bg-contained-button text-white rounded 
-              active:text-active-button-text active:bg-active-button hover:bg-hover-button w-[30%] h-8 cursor-pointer`}
+            className={`mt-6 text-sm font-figtreeSemiBold uppercase bg-contained-button text-white rounded overflow-hidden
+            p-2  active:text-active-button-text active:bg-active-button hover:bg-hover-button w-[30%] h-8 cursor-pointer`}
             type="submit"
           >
             Submit
@@ -161,5 +85,40 @@ function App() {
     </div>
   );
 }
+
+type InputFieldConfig = {
+  title: string;
+  parameterName: InputParametersName;
+  unit: string;
+};
+
+const INPUT_PARAMETERS_FIELDS: InputFieldConfig[] = [
+  {
+    title: "Total Charging Points",
+    parameterName: "totalChargingPoint",
+    unit: "Nos",
+  },
+  {
+    title: "Total Number of Cars",
+    parameterName: "totalNumberOfCars",
+    unit: "Nos",
+  },
+  {
+    title: "Arrival Probability",
+    parameterName: "arrivalProbability",
+    unit: "%",
+  },
+  {
+    title: "Power Consumed By Cars",
+    parameterName: "powerConsumedByCars",
+    unit: "kWh",
+  },
+  {
+    title: "Charging Point Power",
+    parameterName: "chargingPointPower",
+    unit: "kW",
+  },
+];
+
 
 export default App;
