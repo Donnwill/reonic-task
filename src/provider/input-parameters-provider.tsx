@@ -2,7 +2,7 @@ import React, { createContext, ReactNode, useContext, useReducer } from "react";
 
 export type InputParametersState = {
   totalChargingPoint: number;
-  totalNumberOfCars: number;
+  numberOfCarsPerHour: number;
   arrivalProbability: number;
   powerConsumedByCars: number;
   chargingPointPower: number;
@@ -19,8 +19,8 @@ type InputParametersAction =
   | { type: "RESET" };
 
 const initialState: InputParametersState = {
-  totalChargingPoint: 1,
-  totalNumberOfCars: 1,
+  totalChargingPoint: 20,
+  numberOfCarsPerHour: 20,
   arrivalProbability: 100,
   powerConsumedByCars: 18,
   chargingPointPower: 11,

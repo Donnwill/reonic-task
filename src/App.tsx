@@ -8,6 +8,7 @@ import {
   useInputParametersState,
 } from "./provider/input-parameters-provider";
 import { FormInputComponent } from "./components/form-input-component";
+import { inputCalculation } from "./functionality/input-calculation";
 
 function App() {
   const { inputParametersState, inputParametersDispatch } =
@@ -18,6 +19,8 @@ function App() {
   const formValidation: FormValidation = new FormValidation(
     inputParametersState
   );
+
+  const inputCalcation = inputCalculation(inputParametersState);
 
   function onHandleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -40,7 +43,12 @@ function App() {
     setErrors(errors);
 
     if (formValidation.isInputParametersValid()) {
-      console.log({ formData });
+      const sessions = inputCalcation.chargingSessions();
+      const chargePointValue = inputCalcation.chargePointChargingValue();
+      const exemplaryDay = inputCalcation.exemplaryDay();
+      console.log({ sessions });
+      console.log({ chargePointValue });
+      console.log({ exemplaryDay });
     }
   }
 
@@ -99,8 +107,8 @@ const INPUT_PARAMETERS_FIELDS: InputFieldConfig[] = [
     unit: "Nos",
   },
   {
-    title: "Total Number of Cars",
-    parameterName: "totalNumberOfCars",
+    title: "Number of Cars Per Hour",
+    parameterName: "numberOfCarsPerHour",
     unit: "Nos",
   },
   {

@@ -36,7 +36,11 @@ export const FormInputComponent: React.FC<FormInputComponentProps> = ({
           onChange={onHandleChange}
         />
       </InputComponent>
-      {error && <p className="text-error font-IBM text-sm">{error}</p>}
+      {error && (
+        <p className="text-error font-IBM text-sm whitespace-pre-line">
+          {error}
+        </p>
+      )}
     </>
   );
 };
