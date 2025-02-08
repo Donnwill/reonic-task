@@ -15,5 +15,5 @@ export type ExemplaryDay = {
 export type ChargingSessions = {
   chargingValuePerChargePoint: Record<number, number>;
   exemplaryDay: ExemplaryDay;
-  chargingEvents: Record<string, number>;
+  chargingEvent: Record<number, number>;
 };

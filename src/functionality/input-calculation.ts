@@ -60,7 +60,7 @@ export function inputCalculation(inputParameters: InputParameters) {
       if (nextAvailableChargingPoint !== -1) {
         sessionsInfo.push({
           chargingPoint: nextAvailableChargingPoint + 1,
-          timeOfDay: arrival,
+          timeOfDay: Math.ceil(arrival / 60), //Convert it to hour of day
           duration: carChargingDuration,
         });
         availableChargingPoints[nextAvailableChargingPoint] =
@@ -71,12 +71,12 @@ export function inputCalculation(inputParameters: InputParameters) {
     const chargingValuePerChargePointData =
       chargingValuePerChargePoint(sessionsInfo);
     const exemplaryDayData = exemplaryDay(sessionsInfo);
-    const chargingEventsData = chargingEvents(sessionsInfo);
+    const chargingEventData = chargingEvent(sessionsInfo);
 
     return {
       chargingValuePerChargePoint: chargingValuePerChargePointData,
       exemplaryDay: exemplaryDayData,
-      chargingEvents: chargingEventsData,
+      chargingEvent: chargingEventData,
     };
   }
 
@@ -107,7 +107,7 @@ export function inputCalculation(inputParameters: InputParameters) {
     };
 
     sessionsInfo.forEach((session) => {
-      const hour = Math.ceil(session.timeOfDay / 60);
+      const hour = session.timeOfDay;
       const sessionDuration = Math.round(session.duration / 60);
 
       if (hour in exemplaryDay.powerConsumedPerHour) {
@@ -132,15 +132,16 @@ export function inputCalculation(inputParameters: InputParameters) {
     return exemplaryDay;
   }
 
-  function chargingEvents(sessionsInfo: SessionInfo[]): Record<string, number> {
-    const chargingEventPerDay = sessionsInfo.length;
-
-    return {
-      day: chargingEventPerDay,
-      week: chargingEventPerDay * 7,
-      month: chargingEventPerDay * 30,
-      year: chargingEventPerDay * 365,
-    };
+  function chargingEvent(sessionsInfo: SessionInfo[]): Record<number, number> {
+    const chargingEvent: Record<number, number> = {};
+    sessionsInfo.forEach(({ timeOfDay }) => {
+      if (timeOfDay in chargingEvent) {
+        chargingEvent[timeOfDay] += 1;
+      } else {
+        chargingEvent[timeOfDay] = 1;
+      }
+    });
+    return chargingEvent;
   }
 
   return { chargingSessions };

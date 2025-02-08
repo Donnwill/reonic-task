@@ -1,13 +1,15 @@
 import React, { createContext, ReactNode, useContext, useReducer } from "react";
 import { ChargingSessions } from "../models/charging-sessions-model";
 
-type ChargingSessionsAction = {
-  type: "UPDATE_CHARGING_SESSIONS";
-  payload: { chargingSessions: ChargingSessions };
-};
+type ChargingSessionsAction =
+  | {
+      type: "UPDATE_CHARGING_SESSIONS";
+      payload: { chargingSessions: ChargingSessions };
+    }
+  | { type: "RESET" };
 
 const initialState: ChargingSessions = {
-  chargingEvents: {},
+  chargingEvent: {},
   exemplaryDay: {
     totalCarsCharged: 0,
     totalEnergyCharged: 0,
@@ -27,6 +29,8 @@ function updateChargingSessions(
       const chargingSessions = action.payload.chargingSessions;
       return chargingSessions;
     }
+    case "RESET":
+      return initialState;
     default:
       return state;
   }

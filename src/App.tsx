@@ -10,10 +10,10 @@ import {
   InputParametersName,
 } from "./models/input-parameters-model";
 import { useChargingSessionsState } from "./provider/charging-sessions-provider";
+import { Tabs, TabsClickEvent } from "./components/tabs";
 
 function App() {
-  const { chargingSessionsState, chargingSessionsDispatch } =
-    useChargingSessionsState();
+  const { chargingSessionsDispatch } = useChargingSessionsState();
 
   const [inputParameters, setInputParameters] = useState<InputParameters>(
     inputParametersDefault
@@ -54,11 +54,12 @@ function App() {
 
   function resetInputParameters() {
     setInputParameters(inputParametersDefault);
+    chargingSessionsDispatch({ type: "RESET" });
   }
-  console.log({ chargingSessionsState });
+
   return (
-    <div className="flex flex-row">
-      <ComponentsBackground className={"m-10"}>
+    <div className="flex flex-row m-10 gap-10 items-start">
+      <ComponentsBackground className="w-[22rem]">
         <Heading title={"Simulation Input Parameters"} />
         <form onSubmit={onFormSubmit}>
           {INPUT_PARAMETERS_FIELDS.map((inputParametersData, index) => (
@@ -89,6 +90,13 @@ function App() {
             Submit
           </button>
         </form>
+      </ComponentsBackground>
+      <ComponentsBackground>
+        <Tabs
+          onClick={(e: TabsClickEvent) => {
+            console.log(e.tabName);
+          }}
+        />
       </ComponentsBackground>
     </div>
   );
