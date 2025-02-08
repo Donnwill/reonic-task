@@ -2,36 +2,37 @@ import React, { useState } from "react";
 import { ComponentsBackground } from "./components/components-background";
 import { Heading } from "./components/heading";
 import { FormValidation } from "./functionality/form-validation";
-import {
-  InputParametersName,
-  InputParametersState,
-  useInputParametersState,
-} from "./provider/input-parameters-provider";
 import { FormInputComponent } from "./components/form-input-component";
 import { inputCalculation } from "./functionality/input-calculation";
+import {
+  InputParameters,
+  inputParametersDefault,
+  InputParametersName,
+} from "./models/input-parameters-model";
+import { useChargingSessionsState } from "./provider/charging-sessions-provider";
 
 function App() {
-  const { inputParametersState, inputParametersDispatch } =
-    useInputParametersState();
+  const { chargingSessionsState, chargingSessionsDispatch } =
+    useChargingSessionsState();
+
+  const [inputParameters, setInputParameters] = useState<InputParameters>(
+    inputParametersDefault
+  );
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const formValidation: FormValidation = new FormValidation(
-    inputParametersState
-  );
+  const formValidation: FormValidation = new FormValidation(inputParameters);
 
-  const inputCalcation = inputCalculation(inputParametersState);
+  const inputCalcation = inputCalculation(inputParameters);
 
   function onHandleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
 
-    inputParametersDispatch({
-      type: "UPDATE_PARAMETERS",
-      payload: {
-        parameterName: name as keyof InputParametersState,
-        value: value === "" ? "" : Number(value),
-      },
-    });
+    setInputParameters((prevParams) => ({
+      ...prevParams,
+      // Accepting string becasue it clears the input field, if it's only number, the first char is always 0.
+      [name as keyof InputParameters]: value === "" ? "" : Number(value),
+    }));
 
     setErrors((prevError) => ({ ...prevError, [e.target.name]: "" }));
   }
@@ -43,34 +44,33 @@ function App() {
     setErrors(errors);
 
     if (formValidation.isInputParametersValid()) {
-      const sessions = inputCalcation.chargingSessions();
-      const chargePointValue = inputCalcation.chargePointChargingValue();
-      const exemplaryDay = inputCalcation.exemplaryDay();
-      console.log({ sessions });
-      console.log({ chargePointValue });
-      console.log({ exemplaryDay });
+      const chargingSessions = inputCalcation.chargingSessions();
+      chargingSessionsDispatch({
+        type: "UPDATE_CHARGING_SESSIONS",
+        payload: { chargingSessions },
+      });
     }
   }
 
   function resetInputParameters() {
-    inputParametersDispatch({ type: "RESET" });
+    setInputParameters(inputParametersDefault);
   }
-
+  console.log({ chargingSessionsState });
   return (
     <div className="flex flex-row">
       <ComponentsBackground className={"m-10"}>
         <Heading title={"Simulation Input Parameters"} />
         <form onSubmit={onFormSubmit}>
-          {INPUT_PARAMETERS_FIELDS.map((inputParameters, index) => (
+          {INPUT_PARAMETERS_FIELDS.map((inputParametersData, index) => (
             <FormInputComponent
               key={index}
-              title={inputParameters.title}
+              title={inputParametersData.title}
               parameterValue={
-                inputParametersState[inputParameters.parameterName]
+                inputParameters[inputParametersData.parameterName]
               }
-              unit={inputParameters.unit}
-              parameterName={inputParameters.parameterName}
-              error={errors[inputParameters.parameterName]}
+              unit={inputParametersData.unit}
+              parameterName={inputParametersData.parameterName}
+              error={errors[inputParametersData.parameterName]}
               onHandleChange={onHandleChange}
             />
           ))}

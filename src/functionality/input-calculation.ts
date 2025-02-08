@@ -1,18 +1,13 @@
-import { InputParametersState } from "../provider/input-parameters-provider";
+import {
+  ChargingSessions,
+  ExemplaryDay,
+  SessionInfo,
+} from "../models/charging-sessions-model";
+import { InputParameters } from "../models/input-parameters-model";
 
-type SessionInfo = {
-  chargingPoint: number;
-  timeOfDay: number;
-};
+const TOTALMINUTES = 1440; // 24 hours in minutes
 
-type ExemplaryDay = {
-  totalCarsCharged: number;
-  powerConsumed: number;
-  powerConsumedPerHour: Record<number, number>; //kWh
-  peakHour: number;
-};
-
-export function inputCalculation(inputParameters: InputParametersState) {
+export function inputCalculation(inputParameters: InputParameters) {
   const {
     arrivalProbability,
     chargingPointPower,
@@ -20,18 +15,18 @@ export function inputCalculation(inputParameters: InputParametersState) {
     powerConsumedByCars,
     totalChargingPoint,
   } = inputParameters;
-  const TOTALMINUTES = 1440; // 24 hours in minutes
 
   function getArrivalTime(): number[] {
-    const arrivalRate = (numberOfCarsPerHour / 60) * (arrivalProbability / 100);
+    const carArrivaltimes: number[] = [];
+    const arrivalRate = (arrivalProbability / 100) * (numberOfCarsPerHour / 60);
 
     let currentTime = 0;
-    const carArrivaltimes: number[] = [];
 
-    while (currentTime < TOTALMINUTES) {
+    while (true) {
       // Randomised arrival time
-      const randomArrivalInterval = -Math.log(Math.random()) / arrivalRate;
-      currentTime += randomArrivalInterval;
+      currentTime += -Math.log(1 - Math.random()) / arrivalRate;
+
+      if (currentTime > TOTALMINUTES) break;
 
       carArrivaltimes.push(Math.round(currentTime));
     }
@@ -39,7 +34,9 @@ export function inputCalculation(inputParameters: InputParametersState) {
     return carArrivaltimes;
   }
 
-  function chargingSessions(): SessionInfo[] {
+  // Assumption made The cars that arrive when all the charging points are full will leave
+  // and not be place in a queue, its pointless for the cars to wait until a place is freed.
+  function chargingSessions(): ChargingSessions {
     const maxCarChargingDuration =
       (powerConsumedByCars / chargingPointPower) * 60;
     const arrivalTimes = getArrivalTime();
@@ -51,6 +48,11 @@ export function inputCalculation(inputParameters: InputParametersState) {
       // Prevent adding session after 24 hours
       if (arrival + maxCarChargingDuration > TOTALMINUTES) return sessionsInfo;
 
+      const randomChargingPercentage = Math.random() * 0.7 + 0.3; // between 30% to 100% charge
+      const carChargingDuration = Math.round(
+        maxCarChargingDuration * randomChargingPercentage
+      );
+
       const nextAvailableChargingPoint = availableChargingPoints.findIndex(
         (time) => time <= arrival
       );
@@ -59,41 +61,55 @@ export function inputCalculation(inputParameters: InputParametersState) {
         sessionsInfo.push({
           chargingPoint: nextAvailableChargingPoint + 1,
           timeOfDay: arrival,
+          duration: carChargingDuration,
         });
         availableChargingPoints[nextAvailableChargingPoint] =
-          arrival + maxCarChargingDuration;
+          arrival + carChargingDuration;
       }
     });
 
-    return sessionsInfo;
+    const chargingValuePerChargePointData =
+      chargingValuePerChargePoint(sessionsInfo);
+    const exemplaryDayData = exemplaryDay(sessionsInfo);
+    const chargingEventsData = chargingEvents(sessionsInfo);
+
+    return {
+      chargingValuePerChargePoint: chargingValuePerChargePointData,
+      exemplaryDay: exemplaryDayData,
+      chargingEvents: chargingEventsData,
+    };
   }
 
-  function chargePointChargingValue(): Record<number, number> {
-    const sessionsInfo = chargingSessions();
+  function chargingValuePerChargePoint(
+    sessionsInfo: SessionInfo[]
+  ): Record<number, number> {
     const chargePointRecord: Record<number, number> = {};
 
-    sessionsInfo.forEach((session) => {
-      if (session.chargingPoint in chargePointRecord) {
-        chargePointRecord[session.chargingPoint] += chargingPointPower;
+    sessionsInfo.forEach(({ chargingPoint, duration }) => {
+      const powerUsed = Math.round((duration / 60) * chargingPointPower);
+
+      if (chargingPoint in chargePointRecord) {
+        chargePointRecord[chargingPoint] += powerUsed;
       } else {
-        chargePointRecord[session.chargingPoint] = chargingPointPower;
+        chargePointRecord[chargingPoint] = powerUsed;
       }
     });
     return chargePointRecord;
   }
 
-  function exemplaryDay(): ExemplaryDay {
-    const sessionsInfo = chargingSessions();
+  function exemplaryDay(sessionsInfo: SessionInfo[]): ExemplaryDay {
     const exemplaryDay: ExemplaryDay = {
       totalCarsCharged: sessionsInfo.length,
       peakHour: 0,
-      powerConsumed: 0,
+      totalEnergyCharged: 0,
+      maxPowerDemand: 0,
       powerConsumedPerHour: {},
     };
-    const sessionDuration = powerConsumedByCars / chargingPointPower;
 
     sessionsInfo.forEach((session) => {
       const hour = Math.ceil(session.timeOfDay / 60);
+      const sessionDuration = Math.round(session.duration / 60);
+
       if (hour in exemplaryDay.powerConsumedPerHour) {
         exemplaryDay.powerConsumedPerHour[hour] +=
           chargingPointPower * sessionDuration;
@@ -103,22 +119,29 @@ export function inputCalculation(inputParameters: InputParametersState) {
       }
     });
 
-    let maxPower = 0;
-
     Object.entries(exemplaryDay.powerConsumedPerHour).forEach(
-      ([hour, power]) => {
-        if (power > maxPower) {
-          maxPower = power;
+      ([hour, powerDemand]) => {
+        if (powerDemand > exemplaryDay.maxPowerDemand) {
+          exemplaryDay.maxPowerDemand = powerDemand;
           exemplaryDay.peakHour = Number(hour);
         }
-        exemplaryDay.powerConsumed += power;
+        exemplaryDay.totalEnergyCharged += powerDemand;
       }
     );
 
     return exemplaryDay;
   }
 
-  function totalEnergyCharged() {}
+  function chargingEvents(sessionsInfo: SessionInfo[]): Record<string, number> {
+    const chargingEventPerDay = sessionsInfo.length;
 
-  return { chargingSessions, chargePointChargingValue, exemplaryDay };
+    return {
+      day: chargingEventPerDay,
+      week: chargingEventPerDay * 7,
+      month: chargingEventPerDay * 30,
+      year: chargingEventPerDay * 365,
+    };
+  }
+
+  return { chargingSessions };
 }

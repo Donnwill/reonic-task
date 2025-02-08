@@ -1,10 +1,10 @@
-import { InputParametersState } from "../provider/input-parameters-provider";
+import { InputParameters } from "../models/input-parameters-model";
 
 export class FormValidation {
-  private inputParameters: InputParametersState;
+  private inputParameters: InputParameters;
   private errors: Record<string, string>;
 
-  constructor(inputParameters: InputParametersState) {
+  constructor(inputParameters: InputParameters) {
     this.inputParameters = inputParameters;
     this.errors = {};
   }

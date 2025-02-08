@@ -1,13 +1,13 @@
 import React from "react";
 import { InputComponent } from "./input-component";
 import { SubHeading } from "./sub-heading";
-import { InputParametersState } from "../provider/input-parameters-provider";
+import { InputParameters } from "../models/input-parameters-model";
 
 export type FormInputComponentProps = React.HTMLAttributes<HTMLDivElement> & {
   parameterValue: number;
   unit: string;
   title: string;
-  parameterName: keyof InputParametersState;
+  parameterName: keyof InputParameters;
   error: string;
   onHandleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
