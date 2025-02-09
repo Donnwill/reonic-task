@@ -31,8 +31,8 @@ type SessionVisualisationProps = {
   tabName: string;
 };
 
-const GRAPHCONTAINERSTYLE = `sm:w-[10rem] md:w-[18rem] lg:w-[25rem] xl:w-[35rem] sm:h-[12rem] 
-md:h-[14rem] lg:h-[16rem] xl:h-[18rem]`;
+const GRAPHCONTAINERSTYLE = `sm:w-[20rem] md:w-[24rem] lg:w-[23rem] xl:w-[28rem] 2xl:w-[38rem] sm:h-[12rem] 
+md:h-[12rem] lg:h-[16rem] xl:h-[18rem] 2xl:h-[20rem]`;
 
 const DAYOFWEEK = [
   "Monday",
@@ -176,7 +176,7 @@ export const ChargingSessionVisualisation: React.FC<
   };
 
   return (
-    <div className="flex flex-row gap-4">
+    <div className="flex lg:flex-row flex-col gap-4">
       <div className="flex flex-col gap-4">
         <GraphContainer className={GRAPHCONTAINERSTYLE}>
           <Bar
@@ -231,7 +231,7 @@ export const ChargingSessionVisualisation: React.FC<
 function chartOptions(xAxisName: string, yAxisName: string) {
   return {
     responsive: true,
-    maintainAspectRatio: false,
+    maintainAspectRatio: true,
     scales: {
       x: {
         grid: {

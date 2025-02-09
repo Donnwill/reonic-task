@@ -62,7 +62,6 @@ export class FormValidation {
         this.inputParameters.chargingPointPower >
       220
     ) {
-      this.errors.chargingPointPower = `Total power capacity should not exceed 220kW,\nCharging Point Power * Total Charging Point`;
       this.errors.totalChargingPoint = `Total power capacity should not exceed 220kW,\nCharging Point Power * Total Charging Point`;
     }
 

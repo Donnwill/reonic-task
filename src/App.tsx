@@ -61,7 +61,7 @@ function App() {
   }
 
   return (
-    <div className="flex flex-row m-10 gap-10 items-start">
+    <div className="flex flex-col md:flex-row m-10 gap-10 items-start">
       <ComponentsBackground className="w-[22rem]">
         <Heading title={"Simulation Input Parameters"} />
         <form onSubmit={onFormSubmit}>
@@ -86,8 +86,9 @@ function App() {
             Reset
           </button>
           <button
-            className={`mt-6 text-sm font-figtreeSemiBold uppercase bg-contained-button text-white rounded overflow-hidden
-            p-2  active:text-active-button-text active:bg-active-button hover:bg-hover-button w-[30%] h-8 cursor-pointer`}
+            className={`mt-6 text-sm font-figtreeSemiBold uppercase bg-contained-button text-white text-ellipsis rounded 
+              overflow-hidden p-2 active:text-active-button-text active:bg-active-button hover:bg-hover-button
+              w-[30%] h-8 cursor-pointer`}
             type="submit"
           >
             Submit
