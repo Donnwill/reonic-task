@@ -13,7 +13,7 @@ import { useInputParametersState } from "./provider/input-parameters-provider";
 import { OutputComponent } from "./components/output-component";
 
 function App() {
-  const { sessionInfoDispatch } = useSessionInfoState();
+  const { sessionInfoState, sessionInfoDispatch } = useSessionInfoState();
   const { inputParametersState, inputParametersDispatch } =
     useInputParametersState();
 
@@ -95,9 +95,13 @@ function App() {
           </button>
         </form>
       </ComponentsBackground>
-      <ComponentsBackground>
-        <OutputComponent />
-      </ComponentsBackground>
+      {sessionInfoState.length > 0 ? (
+        <ComponentsBackground>
+          <OutputComponent />
+        </ComponentsBackground>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }
