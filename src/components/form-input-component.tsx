@@ -1,13 +1,13 @@
 import React from "react";
 import { InputComponent } from "./input-component";
 import { SubHeading } from "./sub-heading";
-import { InputParametersState } from "../provider/input-parameters-provider";
+import { InputParameters } from "../models/input-parameters-model";
 
-export type FormComponentProps = React.HTMLAttributes<HTMLDivElement> & {
+export type FormInputComponentProps = React.HTMLAttributes<HTMLDivElement> & {
   parameterValue: number;
   unit: string;
   title: string;
-  parameterName: keyof InputParametersState;
+  parameterName: keyof InputParameters;
   error: string;
   onHandleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
@@ -15,7 +15,7 @@ export type FormComponentProps = React.HTMLAttributes<HTMLDivElement> & {
 const INPUTSTYLE = `bg-trout rounded px-3 py-1 w-[50%] text-manatee shadow-sm items-center justify-center 
 font-IBM focus-visible:outline-none overflow-hidden h-7.5 [&::-webkit-inner-spin-button]:appearance-none`;
 
-export const FormComponent: React.FC<FormComponentProps> = ({
+export const FormInputComponent: React.FC<FormInputComponentProps> = ({
   parameterValue,
   unit,
   title,
@@ -36,7 +36,11 @@ export const FormComponent: React.FC<FormComponentProps> = ({
           onChange={onHandleChange}
         />
       </InputComponent>
-      {error && <p className="text-error font-IBM text-sm">{error}</p>}
+      {error && (
+        <p className="text-error font-IBM text-sm whitespace-pre-line">
+          {error}
+        </p>
+      )}
     </>
   );
 };

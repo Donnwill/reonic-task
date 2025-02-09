@@ -1,10 +1,10 @@
-import { InputParametersState } from "../provider/input-parameters-provider";
+import { InputParameters } from "../models/input-parameters-model";
 
 export class FormValidation {
-  private inputParameters: InputParametersState;
+  private inputParameters: InputParameters;
   private errors: Record<string, string>;
 
-  constructor(inputParameters: InputParametersState) {
+  constructor(inputParameters: InputParameters) {
     this.inputParameters = inputParameters;
     this.errors = {};
   }
@@ -19,12 +19,17 @@ export class FormValidation {
         "Total charging points must be greater than 0.";
     }
 
+    if (this.inputParameters.totalChargingPoint > 20) {
+      this.errors.totalChargingPoint =
+        "Total charging points must be less than 20.";
+    }
+
     if (
-      !this.inputParameters.totalNumberOfCars ||
-      this.inputParameters.totalNumberOfCars <= 0
+      !this.inputParameters.numberOfCarsPerHour ||
+      this.inputParameters.numberOfCarsPerHour <= 0
     ) {
-      this.errors.totalNumberOfCars =
-        "Total number of cars must be greater than 0.";
+      this.errors.numberOfCarsPerHour =
+        "Number of cars per hour must be greater than 0.";
     }
 
     if (
@@ -50,6 +55,14 @@ export class FormValidation {
     ) {
       this.errors.chargingPointPower =
         "Charge point power must be greater than 0.";
+    }
+
+    if (
+      this.inputParameters.totalChargingPoint *
+        this.inputParameters.chargingPointPower >
+      220
+    ) {
+      this.errors.totalChargingPoint = `Total power capacity should not exceed 220kW,\nCharging Point Power * Total Charging Point`;
     }
 
     return this.errors;

@@ -1,37 +1,27 @@
 import React, { createContext, ReactNode, useContext, useReducer } from "react";
+import { InputParameters, InputParametersName } from "../models/input-parameters-model";
 
-export type InputParametersState = {
-  totalChargingPoint: number;
-  totalNumberOfCars: number;
-  arrivalProbability: number;
-  powerConsumedByCars: number;
-  chargingPointPower: number;
-};
-
-export type InputParametersName = keyof InputParametersState;
-
-// Accepting string becasue it clears the input field, if it's only number, the first char is always 0.
 type InputParametersAction =
   | {
-      type: "UPDATE_PARAMETERS";
+      type: "UPDATE_INPUT_PARAMETERS";
       payload: { parameterName: InputParametersName; value: number | string };
     }
   | { type: "RESET" };
 
-const initialState: InputParametersState = {
-  totalChargingPoint: 1,
-  totalNumberOfCars: 1,
+const initialState: InputParameters = {
+  totalChargingPoint: 20,
+  numberOfCarsPerHour: 20,
   arrivalProbability: 100,
   powerConsumedByCars: 18,
   chargingPointPower: 11,
 };
 
 function updateInputParameters(
-  state: InputParametersState,
+  state: InputParameters,
   action: InputParametersAction
-): InputParametersState {
+): InputParameters {
   switch (action.type) {
-    case "UPDATE_PARAMETERS": {
+    case "UPDATE_INPUT_PARAMETERS": {
       const { parameterName, value } = action.payload;
       return { ...state, [parameterName]: value };
     }
@@ -44,7 +34,7 @@ function updateInputParameters(
 
 const InputParametersContext = createContext<
   | {
-      inputParametersState: InputParametersState;
+      inputParametersState: InputParameters;
       inputParametersDispatch: React.Dispatch<InputParametersAction>;
     }
   | undefined
