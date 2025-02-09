@@ -6,33 +6,36 @@ import { FormInputComponent } from "./components/form-input-component";
 import { inputCalculation } from "./functionality/input-calculation";
 import {
   InputParameters,
-  inputParametersDefault,
   InputParametersName,
 } from "./models/input-parameters-model";
 import { useChargingSessionsState } from "./provider/charging-sessions-provider";
-import { Tabs, TabsClickEvent } from "./components/tabs";
+import { useInputParametersState } from "./provider/input-parameters-provider";
+import { OutputComponent } from "./components/output-component";
 
 function App() {
   const { chargingSessionsDispatch } = useChargingSessionsState();
-
-  const [inputParameters, setInputParameters] = useState<InputParameters>(
-    inputParametersDefault
-  );
+  const { inputParametersState, inputParametersDispatch } =
+    useInputParametersState();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const formValidation: FormValidation = new FormValidation(inputParameters);
+  const formValidation: FormValidation = new FormValidation(
+    inputParametersState
+  );
 
-  const inputCalcation = inputCalculation(inputParameters);
+  const calculateSessions = inputCalculation(inputParametersState);
 
   function onHandleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
 
-    setInputParameters((prevParams) => ({
-      ...prevParams,
-      // Accepting string becasue it clears the input field, if it's only number, the first char is always 0.
-      [name as keyof InputParameters]: value === "" ? "" : Number(value),
-    }));
+    inputParametersDispatch({
+      type: "UPDATE_INPUT_PARAMETERS",
+      payload: {
+        parameterName: name as keyof InputParameters,
+        // Accepting string becasue it clears the input field, if it's only number, the first char is always 0.
+        value: value === "" ? "" : Number(value),
+      },
+    });
 
     setErrors((prevError) => ({ ...prevError, [e.target.name]: "" }));
   }
@@ -44,7 +47,7 @@ function App() {
     setErrors(errors);
 
     if (formValidation.isInputParametersValid()) {
-      const chargingSessions = inputCalcation.chargingSessions();
+      const chargingSessions = calculateSessions.chargingSessions();
       chargingSessionsDispatch({
         type: "UPDATE_CHARGING_SESSIONS",
         payload: { chargingSessions },
@@ -53,7 +56,7 @@ function App() {
   }
 
   function resetInputParameters() {
-    setInputParameters(inputParametersDefault);
+    inputParametersDispatch({ type: "RESET" });
     chargingSessionsDispatch({ type: "RESET" });
   }
 
@@ -67,7 +70,7 @@ function App() {
               key={index}
               title={inputParametersData.title}
               parameterValue={
-                inputParameters[inputParametersData.parameterName]
+                inputParametersState[inputParametersData.parameterName]
               }
               unit={inputParametersData.unit}
               parameterName={inputParametersData.parameterName}
@@ -92,11 +95,7 @@ function App() {
         </form>
       </ComponentsBackground>
       <ComponentsBackground>
-        <Tabs
-          onClick={(e: TabsClickEvent) => {
-            console.log(e.tabName);
-          }}
-        />
+        <OutputComponent />
       </ComponentsBackground>
     </div>
   );
@@ -135,6 +134,5 @@ const INPUT_PARAMETERS_FIELDS: InputFieldConfig[] = [
     unit: "kW",
   },
 ];
-
 
 export default App;

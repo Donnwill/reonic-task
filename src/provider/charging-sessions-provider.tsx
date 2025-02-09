@@ -9,13 +9,14 @@ type ChargingSessionsAction =
   | { type: "RESET" };
 
 const initialState: ChargingSessions = {
+  sessionsInfo: [],
   chargingEvent: {},
   exemplaryDay: {
     totalCarsCharged: 0,
     totalEnergyCharged: 0,
     powerConsumedPerHour: {},
     maxPowerDemand: 0,
-    peakHour: 0,
+    peakTime: 0,
   },
   chargingValuePerChargePoint: {},
 };

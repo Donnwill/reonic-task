@@ -1,6 +1,6 @@
-export type SessionInfo = {
+export type SessionsInfo = {
   chargingPoint: number;
-  timeOfDay: number;
+  sessionTime: number; // will contain hours, weeks, months
   duration: number;
 };
 
@@ -9,11 +9,12 @@ export type ExemplaryDay = {
   totalEnergyCharged: number; // kWh
   powerConsumedPerHour: Record<number, number>; //kWh
   maxPowerDemand: number;
-  peakHour: number;
+  peakTime: number;
 };
 
 export type ChargingSessions = {
   chargingValuePerChargePoint: Record<number, number>;
   exemplaryDay: ExemplaryDay;
   chargingEvent: Record<number, number>;
+  sessionsInfo: SessionsInfo[];
 };
