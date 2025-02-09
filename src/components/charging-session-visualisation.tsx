@@ -12,7 +12,7 @@ import {
   PointElement,
   LineElement,
 } from "chart.js";
-import { useChargingSessionsState } from "../provider/charging-sessions-provider";
+import { useSessionInfoState } from "../provider/session-info-provider";
 import { visualiseSessionData } from "../functionality/visualise-session-data";
 import { useInputParametersState } from "../provider/input-parameters-provider";
 
@@ -62,11 +62,11 @@ const MONTHSINYEAR = [
 export const ChargingSessionVisualisation: React.FC<
   SessionVisualisationProps
 > = ({ tabName }) => {
-  const { chargingSessionsState } = useChargingSessionsState();
+  const { sessionInfoState } = useSessionInfoState();
   const { inputParametersState } = useInputParametersState();
 
   const visualiseSession = visualiseSessionData(
-    chargingSessionsState.sessionsInfo,
+    sessionInfoState,
     inputParametersState
   );
 
@@ -88,9 +88,7 @@ export const ChargingSessionVisualisation: React.FC<
   const chargingValuePerChargePoint = Object.values(
     chargingSession.chargingValuePerChargePoint
   );
-  const chargePoints = Object.keys(
-    chargingSession.chargingValuePerChargePoint
-  );
+  const chargePoints = Object.keys(chargingSession.chargingValuePerChargePoint);
 
   const powerConsumedPerHour = Object.values(
     chargingSession.exemplaryDay.powerConsumedPerHour
@@ -100,19 +98,16 @@ export const ChargingSessionVisualisation: React.FC<
   );
 
   const chargingEvent = Object.values(chargingSession.chargingEvent);
-  const chargingEventTimeStamp = Object.keys(
-    chargingSession.chargingEvent
-  );
+  const chargingEventTimeStamp = Object.keys(chargingSession.chargingEvent);
 
   const maxPowerDemand = chargingSession.exemplaryDay.maxPowerDemand;
-  const totalEnergyCharged =
-    chargingSession.exemplaryDay.totalEnergyCharged;
+  const totalEnergyCharged = chargingSession.exemplaryDay.totalEnergyCharged;
   const peakTime = chargingSession.exemplaryDay.peakTime;
   const TotalCarCharged = chargingSession.exemplaryDay.totalCarsCharged;
 
   const displayPeak =
     tabName === "Day"
-      ? `${peakTime} Hour`
+      ? `Hour ${peakTime}`
       : tabName === "Week"
       ? DAYOFWEEK[peakTime - 1]
       : tabName === "Month"
@@ -132,7 +127,7 @@ export const ChargingSessionVisualisation: React.FC<
     labels: chargePoints,
     datasets: [
       {
-        label: "Charge Point Value",
+        label: "Charge Point Usage",
         data: chargingValuePerChargePoint,
         backgroundColor: "rgba(26, 132, 229)",
       },
@@ -150,7 +145,7 @@ export const ChargingSessionVisualisation: React.FC<
         : MONTHSINYEAR,
     datasets: [
       {
-        label: "Power Consumed Per Hour",
+        label: "Power Consumed",
         data: powerConsumedPerHour,
         backgroundColor: "rgba(26, 132, 229)",
       },
@@ -168,7 +163,7 @@ export const ChargingSessionVisualisation: React.FC<
         : MONTHSINYEAR,
     datasets: [
       {
-        label: "Charging Event Per Hour",
+        label: "Charging Event",
         data: chargingEvent,
         fill: false,
         borderColor: "rgba(26, 132, 229)",

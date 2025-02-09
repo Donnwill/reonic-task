@@ -8,12 +8,12 @@ import {
   InputParameters,
   InputParametersName,
 } from "./models/input-parameters-model";
-import { useChargingSessionsState } from "./provider/charging-sessions-provider";
+import { useSessionInfoState } from "./provider/session-info-provider";
 import { useInputParametersState } from "./provider/input-parameters-provider";
 import { OutputComponent } from "./components/output-component";
 
 function App() {
-  const { chargingSessionsDispatch } = useChargingSessionsState();
+  const { sessionInfoDispatch } = useSessionInfoState();
   const { inputParametersState, inputParametersDispatch } =
     useInputParametersState();
 
@@ -47,17 +47,17 @@ function App() {
     setErrors(errors);
 
     if (formValidation.isInputParametersValid()) {
-      const chargingSessions = calculateSessions.chargingSessions();
-      chargingSessionsDispatch({
-        type: "UPDATE_CHARGING_SESSIONS",
-        payload: { chargingSessions },
+      const sessionInfo = calculateSessions.chargingSessions();
+      sessionInfoDispatch({
+        type: "UPDATE_SESSION_INFO",
+        payload: { sessionInfo },
       });
     }
   }
 
   function resetInputParameters() {
     inputParametersDispatch({ type: "RESET" });
-    chargingSessionsDispatch({ type: "RESET" });
+    sessionInfoDispatch({ type: "RESET" });
   }
 
   return (

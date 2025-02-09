@@ -1,8 +1,4 @@
-import {
-  ChargingSessions,
-  ExemplaryDay,
-  SessionsInfo,
-} from "../models/charging-sessions-model";
+import { ExemplaryDay, SessionsInfo } from "../models/charging-sessions-model";
 import { InputParameters } from "../models/input-parameters-model";
 
 const TOTALMINUTES = 525600; // 365 days in minutes
@@ -36,7 +32,7 @@ export function inputCalculation(inputParameters: InputParameters) {
 
   // Assumption made The cars that arrive when all the charging points are full will leave
   // and not be placed in a queue, its pointless for the cars to wait until a place is free.
-  function chargingSessions(): ChargingSessions {
+  function chargingSessions(): SessionsInfo[] {
     const maxCarChargingDuration =
       (powerConsumedByCars / chargingPointPower) * 60;
     const arrivalTimes = getArrivalTime();
@@ -68,17 +64,7 @@ export function inputCalculation(inputParameters: InputParameters) {
       }
     });
 
-    const chargingValuePerChargePointData =
-      chargingValuePerChargePoint(sessionsInfo);
-    const exemplaryDayData = exemplaryDay(sessionsInfo);
-    const chargingEventData = chargingEvent(sessionsInfo);
-
-    return {
-      chargingValuePerChargePoint: chargingValuePerChargePointData,
-      exemplaryDay: exemplaryDayData,
-      chargingEvent: chargingEventData,
-      sessionsInfo: sessionsInfo,
-    };
+    return sessionsInfo;
   }
 
   function chargingValuePerChargePoint(
