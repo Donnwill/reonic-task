@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+
+@theme {
+    --color-blackPearl: rgba(22, 26, 29);
+    --color-gunmetal: rgba(45, 51, 57, 0.25);
+    --color-trout: rgba(45, 51, 57);
+    --color-manatee: rgba(145, 153, 161);
+    --color-casper: rgba(171, 179, 186);
+    --color-error: rgba(174, 50, 14, 1);
+    --color-contained-button: rgba(26, 132, 229);
+    --color-cinder: rgba(34, 39, 44);
+    --color-hover-button: rgba(91, 168, 237);
+    --color-active-button: rgba(7, 76, 137);
+    --color-active-button-text: rgba(125, 186, 241);
+    --font-figtreeBold: Figtree-Bold;
+    --font-IBMBold: IBM-Bold;
+    --font-figtreeSemiBold: Figtree-SemiBold;
+    --font-IBM: IBM;
+}
+
+
+@font-face {
+    font-family: "Figtree-Bold";
+    src: url("/src/assets/fonts/Figtree-Bold.ttf");
+}
+
+@font-face {
+    font-family: "Figtree-SemiBold";
+    src: url("/src/assets/fonts/Figtree-SemiBold.ttf");
+}  
+
+@font-face {
+    font-family: "IBM-Bold";
+    src: url("/src/assets/fonts/IBMPlexSans-Bold.ttf");
+}
+  
+@font-face {
+    font-family: "IBM";
+    src: url("/src/assets/fonts/IBMPlexSans-Regular.ttf");
+}
