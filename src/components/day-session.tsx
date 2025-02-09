@@ -102,7 +102,7 @@ export const DaySession: React.FC = () => {
             data={chargePointData}
             options={chartOptions(
               "Number of charge points",
-              "Charge Point Value"
+              "Charge Point Value (kWh)"
             )}
           />
         </GraphContainer>
@@ -110,21 +110,24 @@ export const DaySession: React.FC = () => {
         <GraphContainer className={GRAPHCONTAINERSTYLE}>
           <Line
             data={chargingEventData}
-            options={chartOptions("Timestamp", "Charging Event")}
+            options={chartOptions("Timestamp (24 hours)", "Charging Event")}
           />
         </GraphContainer>
-        <p className="flex justify-center font-figtreeBold text-white text-md">{`Total Car Charged: ${TotalCarCharged}`}</p>
+        <p className="flex justify-center font-figtreeBold text-white text-md">{`Total Car Charged: ${TotalCarCharged} Nos`}</p>
       </div>
       <div className="flex flex-col gap-4">
         <GraphContainer className={GRAPHCONTAINERSTYLE}>
           <Bar
             data={powerConsumedPerHourData}
-            options={chartOptions("Timestamp", "Power Consumed")}
+            options={chartOptions(
+              "Timestamp (24 hours)",
+              "Power Consumed (kWh)"
+            )}
           />
         </GraphContainer>
 
         <p className="flex justify-center font-figtreeBold text-white text-md">{`Max Power Demand: ${maxPowerDemand} kWh`}</p>
-        <p className="flex justify-center font-figtreeBold text-white text-md">{`Peak Hour: ${peakHour}`}</p>
+        <p className="flex justify-center font-figtreeBold text-white text-md">{`Peak Hour: ${peakHour} hour`}</p>
       </div>
     </div>
   );
