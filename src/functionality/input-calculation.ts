@@ -1,15 +1,25 @@
+import { ChargePointType } from "../App";
 import { ExemplaryDay, SessionsInfo } from "../models/charging-sessions-model";
 import { InputParameters } from "../models/input-parameters-model";
 
 const TOTALMINUTES = 525600; // 365 days in minutes
+const ENERGYOUTPUT11kW = 11;
+const ENERGYOUTPUT22kW = 22;
+const ENERGYOUTPUT50Kw = 50;
 
-export function inputCalculation(inputParameters: InputParameters) {
+export function inputCalculation(
+  inputParameters: InputParameters,
+  chargePointType: ChargePointType
+) {
   const {
     arrivalProbability,
     chargingPointPower,
     numberOfCarsPerHour,
     powerConsumedByCars,
     totalChargingPoint,
+    chargingPoints11kW,
+    chargingPoints22kW,
+    chargingPoints50kW,
   } = inputParameters;
 
   function getArrivalTime(): number[] {
@@ -67,13 +77,100 @@ export function inputCalculation(inputParameters: InputParameters) {
     return sessionsInfo;
   }
 
+  function advancedChargingSession(): SessionsInfo[] {
+    const maxCarChargingDuration11kW =
+      (powerConsumedByCars / ENERGYOUTPUT11kW) * 60;
+    const maxCarChargingDuration22kW =
+      (powerConsumedByCars / ENERGYOUTPUT22kW) * 60;
+    const maxCarChargingDuration50kW =
+      (powerConsumedByCars / ENERGYOUTPUT50Kw) * 60;
+
+    const arrivalTimes = getArrivalTime();
+
+    const sessionsInfo: SessionsInfo[] = [];
+    const availableChargingPoints = {
+      50: Array(chargingPoints50kW).fill(0),
+      22: Array(chargingPoints22kW).fill(0),
+      11: Array(chargingPoints11kW).fill(0),
+    };
+
+    arrivalTimes.forEach((arrival) => {
+      const stopSession =
+        arrival + maxCarChargingDuration11kW > TOTALMINUTES ||
+        arrival + maxCarChargingDuration22kW > TOTALMINUTES ||
+        arrival + maxCarChargingDuration50kW > TOTALMINUTES;
+
+      if (stopSession) return sessionsInfo;
+
+      const randomChargingPercentage = Math.random() * 0.7 + 0.3;
+
+      const nextAvailable50kW = availableChargingPoints[50].findIndex(
+        (time) => time <= arrival
+      );
+
+      const nextAvailable22kW = availableChargingPoints[22].findIndex(
+        (time) => time <= arrival
+      );
+
+      const nextAvailable11kW = availableChargingPoints[11].findIndex(
+        (time) => time <= arrival
+      );
+
+      if (nextAvailable50kW !== -1) {
+        const carChargingDuration = Math.round(
+          maxCarChargingDuration50kW * randomChargingPercentage
+        );
+
+        sessionsInfo.push({
+          chargingPoint: 50,
+          sessionTime: Math.ceil(arrival / 60),
+          duration: carChargingDuration,
+        });
+
+        availableChargingPoints[50][nextAvailable50kW] =
+          arrival + carChargingDuration;
+      } else if (nextAvailable22kW !== -1) {
+        const carChargingDuration = Math.round(
+          maxCarChargingDuration22kW * randomChargingPercentage
+        );
+
+        sessionsInfo.push({
+          chargingPoint: 22,
+          sessionTime: Math.ceil(arrival / 60),
+          duration: carChargingDuration,
+        });
+
+        availableChargingPoints[22][nextAvailable22kW] =
+          arrival + carChargingDuration;
+      } else if (nextAvailable11kW !== -1) {
+        const carChargingDuration = Math.round(
+          maxCarChargingDuration11kW * randomChargingPercentage
+        );
+
+        sessionsInfo.push({
+          chargingPoint: 11,
+          sessionTime: Math.ceil(arrival / 60),
+          duration: carChargingDuration,
+        });
+
+        availableChargingPoints[11][nextAvailable11kW] =
+          arrival + carChargingDuration;
+      }
+    });
+
+    return sessionsInfo;
+  }
+
   function chargingValuePerChargePoint(
     sessionsInfo: SessionsInfo[]
   ): Record<number, number> {
     const chargePointRecord: Record<number, number> = {};
 
     sessionsInfo.forEach(({ chargingPoint, duration }) => {
-      const powerUsed = Math.round((duration / 60) * chargingPointPower);
+      const activeChargingPointPower =
+        chargePointType === "Basic" ? chargingPointPower : chargingPoint;
+
+      const powerUsed = Math.round((duration / 60) * activeChargingPointPower);
 
       if (chargingPoint in chargePointRecord) {
         chargePointRecord[chargingPoint] += powerUsed;
@@ -95,14 +192,19 @@ export function inputCalculation(inputParameters: InputParameters) {
 
     sessionsInfo.forEach((session) => {
       const hour = session.sessionTime;
-      const sessionDuration = Math.round(session.duration / 60);
+      const sessionDuration = session.duration / 60;
+
+      const activeChargingPointPower =
+        chargePointType === "Basic"
+          ? chargingPointPower
+          : session.chargingPoint;
 
       if (hour in exemplaryDay.powerConsumedPerHour) {
         exemplaryDay.powerConsumedPerHour[hour] +=
-          chargingPointPower * sessionDuration;
+          activeChargingPointPower * sessionDuration;
       } else {
         exemplaryDay.powerConsumedPerHour[hour] =
-          chargingPointPower * sessionDuration;
+          activeChargingPointPower * sessionDuration;
       }
     });
 
@@ -136,5 +238,6 @@ export function inputCalculation(inputParameters: InputParameters) {
     chargingValuePerChargePoint,
     exemplaryDay,
     chargingEvent,
+    advancedChargingSession,
   };
 }

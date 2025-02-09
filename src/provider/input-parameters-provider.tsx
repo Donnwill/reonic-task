@@ -14,6 +14,9 @@ const initialState: InputParameters = {
   arrivalProbability: 100,
   powerConsumedByCars: 18,
   chargingPointPower: 11,
+  chargingPoints11kW: 1,
+  chargingPoints22kW: 0,
+  chargingPoints50kW: 0,
 };
 
 function updateInputParameters(

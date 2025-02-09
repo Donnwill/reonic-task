@@ -58,11 +58,29 @@ export class FormValidation {
     }
 
     if (
+      !this.inputParameters.chargingPoints11kW &&
+      !this.inputParameters.chargingPoints22kW &&
+      !this.inputParameters.chargingPoints50kW
+    ) {
+      this.errors.chargingPoints11kW =
+        "Atleast one of the Charging point 11kW must be greater than 0.";
+    }
+
+    if (
+      this.inputParameters.chargingPoints11kW * 11 +
+        this.inputParameters.chargingPoints22kW * 22 +
+        this.inputParameters.chargingPoints50kW * 50 >
+      220
+    ) {
+      this.errors.chargingPoints11kW = `Charging point 11kW * Charging point 22kW * Charging point 50kW,\nshould not exceed 220kW`;
+    }
+
+    if (
       this.inputParameters.totalChargingPoint *
         this.inputParameters.chargingPointPower >
       220
     ) {
-      this.errors.totalChargingPoint = `Total power capacity should not exceed 220kW,\nCharging Point Power * Total Charging Point`;
+      this.errors.totalChargingPoint = `Total power capacity should not exceed 220kW,\nCharging Point Power * Total Charging Point.`;
     }
 
     return this.errors;

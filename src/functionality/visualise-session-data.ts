@@ -1,3 +1,4 @@
+import { ChargePointType } from "../App";
 import {
   ChargingSessions,
   SessionsInfo,
@@ -7,13 +8,14 @@ import { inputCalculation } from "./input-calculation";
 
 const HOURNSINDAY = 24;
 const HOURSINWEEK = 168;
-const HOURSINMONTH = 672; // Assume 28 days a week 
+const HOURSINMONTH = 672; // Assume 28 days a week
 
 export function visualiseSessionData(
   sessionsInfo: SessionsInfo[],
-  inputParameters: InputParameters
+  inputParameters: InputParameters,
+  chargePointType: ChargePointType
 ) {
-  const calculateSessions = inputCalculation(inputParameters);
+  const calculateSessions = inputCalculation(inputParameters, chargePointType);
 
   function chargingSessionPerDay(): ChargingSessions {
     const daySession = sessionsInfo.filter(

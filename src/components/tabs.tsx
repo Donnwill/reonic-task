@@ -15,15 +15,23 @@ export const Tabs: React.FC<TabsProps> = ({
   tabNames,
   activeTabName,
   onClick,
+  className,
 }) => {
   return (
-    <div className="flex h-9 bg-blackPearl border-2 px-0.5 items-center justify-center w-full rounded-lg border-trout">
+    <div
+      className={cn(
+        `flex h-9 bg-blackPearl border-2 px-0.5 items-center justify-center w-full rounded-lg border-trout`,
+        className
+      )}
+    >
       {tabNames.map((tabName, index) => (
         <button
           onClick={(e) => {
-            const event = e as unknown as TabsClickEvent;
-            event.tabName = tabName;
-            onClick(event);
+            if (activeTabName !== tabNames[index]) {
+              const event = e as unknown as TabsClickEvent;
+              event.tabName = tabName;
+              onClick(event);
+            }
           }}
           key={index}
           className={cn(
