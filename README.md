@@ -30,4 +30,4 @@ Once these steps are complete, the app will be running at **http://localhost:517
 
 ## Images
 
-![Alt text](/basic-nodata.png)
+![Alt text](public/basic-nodata.png)
