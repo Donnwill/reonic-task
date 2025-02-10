@@ -11,19 +11,28 @@ import {
 import { useSessionInfoState } from "./provider/session-info-provider";
 import { useInputParametersState } from "./provider/input-parameters-provider";
 import { OutputComponent } from "./components/output-component";
+import { Tabs, TabsClickEvent } from "./components/tabs";
+
+const CHARGEPOINTTYPES = ["Basic", "Advanced"] as const;
+export type ChargePointType = (typeof CHARGEPOINTTYPES)[number];
 
 function App() {
-  const { sessionInfoState, sessionInfoDispatch } = useSessionInfoState();
+  const { sessionInfoDispatch } = useSessionInfoState();
   const { inputParametersState, inputParametersDispatch } =
     useInputParametersState();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [chargePointType, setChargePointType] =
+    useState<ChargePointType>("Basic");
 
   const formValidation: FormValidation = new FormValidation(
     inputParametersState
   );
 
-  const calculateSessions = inputCalculation(inputParametersState);
+  const calculateSessions = inputCalculation(
+    inputParametersState,
+    chargePointType
+  );
 
   function onHandleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -47,7 +56,11 @@ function App() {
     setErrors(errors);
 
     if (formValidation.isInputParametersValid()) {
-      const sessionInfo = calculateSessions.chargingSessions();
+      const sessionInfo =
+        chargePointType === "Basic"
+          ? calculateSessions.chargingSessions()
+          : calculateSessions.advancedChargingSession();
+
       sessionInfoDispatch({
         type: "UPDATE_SESSION_INFO",
         payload: { sessionInfo },
@@ -64,20 +77,31 @@ function App() {
     <div className="flex flex-col md:flex-row m-10 gap-10 items-start">
       <ComponentsBackground className="w-[22rem]">
         <Heading title={"Simulation Input Parameters"} />
+        <Tabs
+          className="w-[50%] mt-6"
+          tabNames={[...CHARGEPOINTTYPES]}
+          activeTabName={chargePointType}
+          onClick={(e: TabsClickEvent) => {
+            resetInputParameters();
+            setChargePointType(e.tabName as ChargePointType);
+          }}
+        />
         <form onSubmit={onFormSubmit}>
-          {INPUT_PARAMETERS_FIELDS.map((inputParametersData, index) => (
-            <FormInputComponent
-              key={index}
-              title={inputParametersData.title}
-              parameterValue={
-                inputParametersState[inputParametersData.parameterName]
-              }
-              unit={inputParametersData.unit}
-              parameterName={inputParametersData.parameterName}
-              error={errors[inputParametersData.parameterName]}
-              onHandleChange={onHandleChange}
-            />
-          ))}
+          {INPUT_PARAMETERS_FIELDS(chargePointType).map(
+            (inputParametersData, index) => (
+              <FormInputComponent
+                key={index}
+                title={inputParametersData.title}
+                parameterValue={
+                  inputParametersState[inputParametersData.parameterName]
+                }
+                unit={inputParametersData.unit}
+                parameterName={inputParametersData.parameterName}
+                error={errors[inputParametersData.parameterName]}
+                onHandleChange={onHandleChange}
+              />
+            )
+          )}
           <button
             className="text-manatee cursor-pointer mr-5 font-IBM underline"
             type="button"
@@ -95,13 +119,9 @@ function App() {
           </button>
         </form>
       </ComponentsBackground>
-      {sessionInfoState.length > 0 ? (
-        <ComponentsBackground>
-          <OutputComponent />
-        </ComponentsBackground>
-      ) : (
-        <></>
-      )}
+      <ComponentsBackground>
+        <OutputComponent chargePointType={chargePointType} />
+      </ComponentsBackground>
     </div>
   );
 }
@@ -112,32 +132,55 @@ type InputFieldConfig = {
   unit: string;
 };
 
-const INPUT_PARAMETERS_FIELDS: InputFieldConfig[] = [
-  {
-    title: "Total Charging Points",
-    parameterName: "totalChargingPoint",
-    unit: "Nos",
-  },
-  {
-    title: "Number of Cars Per Hour",
-    parameterName: "numberOfCarsPerHour",
-    unit: "Nos",
-  },
-  {
-    title: "Arrival Probability",
-    parameterName: "arrivalProbability",
-    unit: "%",
-  },
-  {
-    title: "Power Consumed By Cars",
-    parameterName: "powerConsumedByCars",
-    unit: "kWh",
-  },
-  {
-    title: "Charging Point Power",
-    parameterName: "chargingPointPower",
-    unit: "kW",
-  },
-];
+function INPUT_PARAMETERS_FIELDS(tabName: ChargePointType): InputFieldConfig[] {
+  return [
+    ...(tabName === "Advanced"
+      ? [
+          {
+            title: "Charging Points 11kW",
+            parameterName: "chargingPoints11kW" as InputParametersName,
+            unit: "Nos",
+          },
+          {
+            title: "Charging Points 22kW",
+            parameterName: "chargingPoints22kW" as InputParametersName,
+            unit: "Nos",
+          },
+          {
+            title: "Charging Points 50kW",
+            parameterName: "chargingPoints50kW" as InputParametersName,
+            unit: "Nos",
+          },
+        ]
+      : [
+          {
+            title: "Total Charging Points",
+            parameterName: "totalChargingPoint" as InputParametersName,
+            unit: "Nos",
+          },
+          {
+            title: "Charging Point Power",
+            parameterName: "chargingPointPower" as InputParametersName,
+            unit: "kW",
+          },
+        ]),
+
+    {
+      title: "Number of Cars Per Hour",
+      parameterName: "numberOfCarsPerHour",
+      unit: "Nos",
+    },
+    {
+      title: "Arrival Probability",
+      parameterName: "arrivalProbability",
+      unit: "%",
+    },
+    {
+      title: "Power Consumed By Cars",
+      parameterName: "powerConsumedByCars",
+      unit: "kWh",
+    },
+  ];
+}
 
 export default App;
