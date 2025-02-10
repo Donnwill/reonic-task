@@ -4,7 +4,7 @@
 
 This is a simple web application.
 - **Version 1.0.0**: Check out the initial version with no bonus task by switching to the `v1.0.0` tag.
-- **Latest Version**: For the most up-to-date features, switch to the `master` branch.
+- **Latest Version**: For checking out bonus features, switch to the `master` branch.
 
 ## How to Run the App
 
