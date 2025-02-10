@@ -28,3 +28,6 @@ npm run dev
 
 Once these steps are complete, the app will be running at **http://localhost:5173/**.
 
+## Images
+
+![Alt text](/basic-nodata.png)
