@@ -30,4 +30,23 @@ Once these steps are complete, the app will be running at **http://localhost:517
 
 ## Images
 
+### 1. Basic no data
 ![Alt text](public/basic-nodata.png)
+
+### 2. Basic day data
+![Alt text](public/basic-day.png)
+
+### 3. Basic year data
+![Alt text](public/basic-year.png)
+
+### 4. Advanced day data
+![Alt text](public/advanced-day.png)
+
+### 5. Advanced year data
+![Alt text](public/advanced-year.png)
+
+### 6. Advanced responsive
+![Alt text](public/advanced-responsive.png)
+
+### 7. Advanced responsive sm
+![Alt text](public/advanced-responsive-sm.png)
