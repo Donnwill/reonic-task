@@ -1,23 +1,33 @@
 import React, { useState } from "react";
 import { ChargingSessionVisualisation } from "./charging-session-visualisation";
 import { Tabs, TabsClickEvent } from "./tabs";
+import { ChargePointType } from "../App";
 
-const TABNAMES = ["Day", "Week", "Month", "Year"] as const;
-export type TabName = (typeof TABNAMES)[number];
+const TIMEINTERVALS = ["Day", "Week", "Month", "Year"] as const;
+export type TimeIntervals = (typeof TIMEINTERVALS)[number];
 
-export const OutputComponent: React.FC = () => {
-  const [activeTabName, setActiveTabName] = useState<TabName>("Day");
+type OutputComponentProps = {
+  chargePointType: ChargePointType;
+};
+
+export const OutputComponent: React.FC<OutputComponentProps> = ({
+  chargePointType,
+}) => {
+  const [activeTabName, setActiveTabName] = useState<TimeIntervals>("Day");
 
   return (
     <div className="flex flex-col gap-2">
       <Tabs
-        tabNames={[...TABNAMES]}
+        tabNames={[...TIMEINTERVALS]}
         activeTabName={activeTabName}
-        onClick={ (e: TabsClickEvent)=> {
-          setActiveTabName(e.tabName as TabName)
+        onClick={(e: TabsClickEvent) => {
+          setActiveTabName(e.tabName as TimeIntervals);
         }}
       />
-      <ChargingSessionVisualisation tabName={activeTabName} />
+      <ChargingSessionVisualisation
+        timeIntervals={activeTabName}
+        chargePointType={chargePointType}
+      />
     </div>
   );
 };

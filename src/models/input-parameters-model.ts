@@ -4,6 +4,9 @@ export type InputParameters = {
   arrivalProbability: number;
   powerConsumedByCars: number;
   chargingPointPower: number;
+  chargingPoints11kW: number;
+  chargingPoints22kW: number;
+  chargingPoints50kW: number;
 };
 
 export type InputParametersName = keyof InputParameters;
