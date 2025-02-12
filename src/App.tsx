@@ -82,7 +82,7 @@ function App() {
           tabNames={[...CHARGEPOINTTYPES]}
           activeTabName={chargePointType}
           onClick={(e: TabsClickEvent) => {
-            resetInputParameters();
+            inputParametersDispatch({ type: "RESET" });
             setChargePointType(e.tabName as ChargePointType);
           }}
         />

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { GraphContainer } from "./Graph-container";
 import { Bar, Line } from "react-chartjs-2";
 import {
@@ -17,6 +17,7 @@ import { visualiseSessionData } from "../functionality/visualise-session-data";
 import { useInputParametersState } from "../provider/input-parameters-provider";
 import { TimeIntervals } from "./output-component";
 import { ChargePointType } from "../App";
+import { ChargingSessions } from "../models/charging-sessions-model";
 
 ChartJS.register(
   CategoryScale,
@@ -65,6 +66,18 @@ const MONTHSINYEAR = [
 export const ChargingSessionVisualisation: React.FC<
   SessionVisualisationProps
 > = ({ timeIntervals, chargePointType }) => {
+  const [chargingSession, setChargingSession] = useState<ChargingSessions>({
+    chargingEvent: {},
+    chargingValuePerChargePoint: {},
+    sessionsInfo: [],
+    exemplaryDay: {
+      maxPowerDemand: 0,
+      peakTime: 0,
+      powerConsumedPerHour: {},
+      totalCarsCharged: 0,
+      totalEnergyCharged: 0,
+    },
+  });
   const { sessionInfoState } = useSessionInfoState();
   const { inputParametersState } = useInputParametersState();
 
@@ -74,20 +87,25 @@ export const ChargingSessionVisualisation: React.FC<
     chargePointType
   );
 
-  const chargingSession = (function chargingSession() {
-    switch (timeIntervals) {
-      case "Day":
-        return visualiseSession.chargingSessionPerDay();
-      case "Week":
-        return visualiseSession.chargingSessionPerWeek();
-      case "Month":
-        return visualiseSession.chargingSessionPerMonth();
-      case "Year":
-        return visualiseSession.chargingSessionPerYear();
-      default:
-        return visualiseSession.chargingSessionPerDay();
-    }
-  })();
+  useEffect(() => {
+    const chargingSession = (function chargingSession() {
+      switch (timeIntervals) {
+        case "Day":
+          return visualiseSession.chargingSessionPerDay();
+        case "Week":
+          return visualiseSession.chargingSessionPerWeek();
+        case "Month":
+          return visualiseSession.chargingSessionPerMonth();
+        case "Year":
+          return visualiseSession.chargingSessionPerYear();
+        default:
+          return visualiseSession.chargingSessionPerDay();
+      }
+    })();
+    setChargingSession(chargingSession);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionInfoState, timeIntervals]);
 
   const chargingValuePerChargePoint = Object.values(
     chargingSession.chargingValuePerChargePoint
