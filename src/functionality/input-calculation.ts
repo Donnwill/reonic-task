@@ -88,10 +88,12 @@ export function inputCalculation(
     const arrivalTimes = getArrivalTime();
 
     const sessionsInfo: SessionsInfo[] = [];
+
+    // Using Number(chargingPoints50kW) becasue chargingPoints50kW could be an empty string, so that empty string will be converted to 0.
     const availableChargingPoints = {
-      50: Array(chargingPoints50kW).fill(0),
-      22: Array(chargingPoints22kW).fill(0),
-      11: Array(chargingPoints11kW).fill(0),
+      50: Array(Number(chargingPoints50kW)).fill(0),
+      22: Array(Number(chargingPoints22kW)).fill(0),
+      11: Array(Number(chargingPoints11kW)).fill(0),
     };
 
     arrivalTimes.forEach((arrival) => {

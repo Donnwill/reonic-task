@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { GraphContainer } from "./Graph-container";
+import { GraphLayoutContainer } from "../layout/Graph-layout-container";
 import { Bar, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -204,7 +204,7 @@ export const ChargingSessionVisualisation: React.FC<
   return (
     <div className="flex lg:flex-row flex-col gap-4">
       <div className="flex flex-col gap-4">
-        <GraphContainer className={GRAPHCONTAINERSTYLE}>
+        <GraphLayoutContainer className={GRAPHCONTAINERSTYLE}>
           <Bar
             data={chargePointData}
             options={chartOptions(
@@ -212,19 +212,19 @@ export const ChargingSessionVisualisation: React.FC<
               "Charge Point Value (kWh)"
             )}
           />
-        </GraphContainer>
+        </GraphLayoutContainer>
         <div className="flex flex-row justify-center gap-2">
           <p className="font-figtreeBold text-casper text-md">{`Total Energy Charged: `}</p>
           <p className="font-figtreeBold text-white text-md">
             {totalEnergyCharged} kWh
           </p>
         </div>
-        <GraphContainer className={GRAPHCONTAINERSTYLE}>
+        <GraphLayoutContainer className={GRAPHCONTAINERSTYLE}>
           <Line
             data={chargingEventData}
             options={chartOptions(timeStampText, "Charging Event")}
           />
-        </GraphContainer>
+        </GraphLayoutContainer>
         <div className="flex flex-row justify-center gap-2">
           <p className="font-figtreeBold text-casper text-md">{`Total Car Charged: `}</p>
           <p className="font-figtreeBold text-white text-md">
@@ -233,12 +233,12 @@ export const ChargingSessionVisualisation: React.FC<
         </div>
       </div>
       <div className="flex flex-col gap-4">
-        <GraphContainer className={GRAPHCONTAINERSTYLE}>
+        <GraphLayoutContainer className={GRAPHCONTAINERSTYLE}>
           <Bar
             data={powerConsumedPerHourData}
             options={chartOptions(timeStampText, "Power Consumed (kWh)")}
           />
-        </GraphContainer>
+        </GraphLayoutContainer>
         <div className="flex flex-row justify-center gap-2">
           <p className="font-figtreeBold text-casper text-md">{`Max Power Demand: `}</p>
           <p className="font-figtreeBold text-white text-md">

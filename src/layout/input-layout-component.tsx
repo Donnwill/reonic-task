@@ -1,12 +1,12 @@
 import React from "react";
 import { cn } from "../lib/utils";
 
-export type InputComponentProps = React.HTMLAttributes<HTMLDivElement> & {
+export type InputLayoutComponentProps = React.HTMLAttributes<HTMLDivElement> & {
   children: React.ReactNode;
   unit: string;
 };
 
-export const InputComponent: React.FC<InputComponentProps> = ({
+export const InputLayoutComponent: React.FC<InputLayoutComponentProps> = ({
   children,
   unit,
   className,

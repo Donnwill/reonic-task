@@ -1,11 +1,11 @@
 import React from "react";
 import { cn } from "../lib/utils";
 
-export type SubHeadingProps = React.HTMLAttributes<HTMLDivElement> & {
+export type FormLabelProps = React.HTMLAttributes<HTMLDivElement> & {
   title: string;
 };
 
-export const SubHeading: React.FC<SubHeadingProps> = ({ title, className }) => {
+export const FormLabel: React.FC<FormLabelProps> = ({ title, className }) => {
   return (
     <h2
       className={cn(
