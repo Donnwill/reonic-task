@@ -62,24 +62,21 @@ export class FormValidation {
       typeof this.inputParameters.chargingPoints11kW === "string" ||
       this.inputParameters.chargingPoints11kW < 0
     ) {
-      this.errors.chargingPoints11kW =
-        "Charging point 11kW must be greater than 0.";
+      this.errors.chargingPoints11kW = "Charging point 11kW must be atleast 0.";
     }
 
     if (
       typeof this.inputParameters.chargingPoints22kW === "string" ||
       this.inputParameters.chargingPoints22kW < 0
     ) {
-      this.errors.chargingPoints22kW =
-        "Charging point 22kw must be greater than 0.";
+      this.errors.chargingPoints22kW = "Charging point 22kw must be atleast 0.";
     }
 
     if (
       typeof this.inputParameters.chargingPoints50kW === "string" ||
       this.inputParameters.chargingPoints50kW < 0
     ) {
-      this.errors.chargingPoints50kW =
-        "Charging point 50kW must be greater than 0.";
+      this.errors.chargingPoints50kW = "Charging point 50kW must be atleast 0.";
     }
 
     if (
