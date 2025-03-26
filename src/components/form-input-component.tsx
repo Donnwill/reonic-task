@@ -1,6 +1,6 @@
 import React from "react";
-import { InputComponent } from "./input-component";
-import { SubHeading } from "./sub-heading";
+import { InputLayoutComponent } from "../layout/input-layout-component";
+import { FormLabel } from "./form-label";
 import { InputParameters } from "../models/input-parameters-model";
 
 export type FormInputComponentProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -25,8 +25,8 @@ export const FormInputComponent: React.FC<FormInputComponentProps> = ({
 }) => {
   return (
     <>
-      <SubHeading className="mt-6" title={title} />
-      <InputComponent className="mt-1" unit={unit}>
+      <FormLabel className="mt-6" title={title} />
+      <InputLayoutComponent className="mt-1" unit={unit}>
         <input
           className={INPUTSTYLE}
           placeholder={title}
@@ -35,7 +35,7 @@ export const FormInputComponent: React.FC<FormInputComponentProps> = ({
           type="number"
           onChange={onHandleChange}
         />
-      </InputComponent>
+      </InputLayoutComponent>
       {error && (
         <p className="text-error font-IBM text-sm whitespace-pre-line">
           {error}

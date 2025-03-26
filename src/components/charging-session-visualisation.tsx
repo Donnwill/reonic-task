@@ -1,5 +1,5 @@
-import React from "react";
-import { GraphContainer } from "./Graph-container";
+import React, { useEffect, useState } from "react";
+import { GraphLayoutContainer } from "../layout/Graph-layout-container";
 import { Bar, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -17,6 +17,7 @@ import { visualiseSessionData } from "../functionality/visualise-session-data";
 import { useInputParametersState } from "../provider/input-parameters-provider";
 import { TimeIntervals } from "./output-component";
 import { ChargePointType } from "../App";
+import { ChargingSessions } from "../models/charging-sessions-model";
 
 ChartJS.register(
   CategoryScale,
@@ -65,6 +66,18 @@ const MONTHSINYEAR = [
 export const ChargingSessionVisualisation: React.FC<
   SessionVisualisationProps
 > = ({ timeIntervals, chargePointType }) => {
+  const [chargingSession, setChargingSession] = useState<ChargingSessions>({
+    chargingEvent: {},
+    chargingValuePerChargePoint: {},
+    sessionsInfo: [],
+    exemplaryDay: {
+      maxPowerDemand: 0,
+      peakTime: 0,
+      powerConsumedPerHour: {},
+      totalCarsCharged: 0,
+      totalEnergyCharged: 0,
+    },
+  });
   const { sessionInfoState } = useSessionInfoState();
   const { inputParametersState } = useInputParametersState();
 
@@ -74,20 +87,25 @@ export const ChargingSessionVisualisation: React.FC<
     chargePointType
   );
 
-  const chargingSession = (function chargingSession() {
-    switch (timeIntervals) {
-      case "Day":
-        return visualiseSession.chargingSessionPerDay();
-      case "Week":
-        return visualiseSession.chargingSessionPerWeek();
-      case "Month":
-        return visualiseSession.chargingSessionPerMonth();
-      case "Year":
-        return visualiseSession.chargingSessionPerYear();
-      default:
-        return visualiseSession.chargingSessionPerDay();
-    }
-  })();
+  useEffect(() => {
+    const chargingSession = (function chargingSession() {
+      switch (timeIntervals) {
+        case "Day":
+          return visualiseSession.chargingSessionPerDay();
+        case "Week":
+          return visualiseSession.chargingSessionPerWeek();
+        case "Month":
+          return visualiseSession.chargingSessionPerMonth();
+        case "Year":
+          return visualiseSession.chargingSessionPerYear();
+        default:
+          return visualiseSession.chargingSessionPerDay();
+      }
+    })();
+    setChargingSession(chargingSession);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionInfoState, timeIntervals]);
 
   const chargingValuePerChargePoint = Object.values(
     chargingSession.chargingValuePerChargePoint
@@ -186,7 +204,7 @@ export const ChargingSessionVisualisation: React.FC<
   return (
     <div className="flex lg:flex-row flex-col gap-4">
       <div className="flex flex-col gap-4">
-        <GraphContainer className={GRAPHCONTAINERSTYLE}>
+        <GraphLayoutContainer className={GRAPHCONTAINERSTYLE}>
           <Bar
             data={chargePointData}
             options={chartOptions(
@@ -194,19 +212,19 @@ export const ChargingSessionVisualisation: React.FC<
               "Charge Point Value (kWh)"
             )}
           />
-        </GraphContainer>
+        </GraphLayoutContainer>
         <div className="flex flex-row justify-center gap-2">
           <p className="font-figtreeBold text-casper text-md">{`Total Energy Charged: `}</p>
           <p className="font-figtreeBold text-white text-md">
             {totalEnergyCharged} kWh
           </p>
         </div>
-        <GraphContainer className={GRAPHCONTAINERSTYLE}>
+        <GraphLayoutContainer className={GRAPHCONTAINERSTYLE}>
           <Line
             data={chargingEventData}
             options={chartOptions(timeStampText, "Charging Event")}
           />
-        </GraphContainer>
+        </GraphLayoutContainer>
         <div className="flex flex-row justify-center gap-2">
           <p className="font-figtreeBold text-casper text-md">{`Total Car Charged: `}</p>
           <p className="font-figtreeBold text-white text-md">
@@ -215,12 +233,12 @@ export const ChargingSessionVisualisation: React.FC<
         </div>
       </div>
       <div className="flex flex-col gap-4">
-        <GraphContainer className={GRAPHCONTAINERSTYLE}>
+        <GraphLayoutContainer className={GRAPHCONTAINERSTYLE}>
           <Bar
             data={powerConsumedPerHourData}
             options={chartOptions(timeStampText, "Power Consumed (kWh)")}
           />
-        </GraphContainer>
+        </GraphLayoutContainer>
         <div className="flex flex-row justify-center gap-2">
           <p className="font-figtreeBold text-casper text-md">{`Max Power Demand: `}</p>
           <p className="font-figtreeBold text-white text-md">

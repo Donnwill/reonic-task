@@ -1,11 +1,11 @@
 import * as React from "react";
 import { cn } from "../lib/utils";
 
-export type GraphContainerProps = React.HTMLAttributes<HTMLDivElement> & {
+export type GraphLayoutContainerProps = React.HTMLAttributes<HTMLDivElement> & {
   children: React.ReactNode;
 };
 
-export const GraphContainer: React.FC<GraphContainerProps> = ({
+export const GraphLayoutContainer: React.FC<GraphLayoutContainerProps> = ({
   children,
   className,
 }) => {

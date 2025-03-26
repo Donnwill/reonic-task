@@ -1,11 +1,11 @@
 import React from "react";
 import { cn } from "../lib/utils";
 
-export type HeadingProps = React.HTMLAttributes<HTMLDivElement> & {
+export type PageTitleProps = React.HTMLAttributes<HTMLDivElement> & {
   title: string;
 };
 
-export const Heading: React.FC<HeadingProps> = ({ title, className }) => {
+export const PageTitle: React.FC<PageTitleProps> = ({ title, className }) => {
   return (
     <h1
       className={cn(

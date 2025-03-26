@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { ComponentsBackground } from "./components/components-background";
-import { Heading } from "./components/heading";
+import { ComponentsBackground } from "./layout/components-background";
+import { PageTitle } from "./components/page-title";
 import { FormValidation } from "./functionality/form-validation";
 import { FormInputComponent } from "./components/form-input-component";
 import { inputCalculation } from "./functionality/input-calculation";
@@ -45,8 +45,6 @@ function App() {
         value: value === "" ? "" : Number(value),
       },
     });
-
-    setErrors((prevError) => ({ ...prevError, [e.target.name]: "" }));
   }
 
   function onFormSubmit(formData: React.FormEvent<HTMLFormElement>) {
@@ -71,18 +69,19 @@ function App() {
   function resetInputParameters() {
     inputParametersDispatch({ type: "RESET" });
     sessionInfoDispatch({ type: "RESET" });
+    setErrors({});
   }
 
   return (
     <div className="flex flex-col md:flex-row m-10 gap-10 items-start">
       <ComponentsBackground className="w-[22rem]">
-        <Heading title={"Simulation Input Parameters"} />
+        <PageTitle title={"Simulation Input Parameters"} />
         <Tabs
           className="w-[50%] mt-6"
           tabNames={[...CHARGEPOINTTYPES]}
           activeTabName={chargePointType}
           onClick={(e: TabsClickEvent) => {
-            resetInputParameters();
+            inputParametersDispatch({ type: "RESET" });
             setChargePointType(e.tabName as ChargePointType);
           }}
         />
